@@ -1,0 +1,16 @@
+{
+  "extends": ["@tsconfig/strictest", "@tsconfig/bun"],
+  "compilerOptions": {
+    "lib": ["ES2024"],
+    "target": "ES2024",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "resolveJsonModule": true,
+    "noUncheckedSideEffectImports": true,
+    "plugins": [{ "name": "@effect/language-service" }],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
