@@ -2,29 +2,35 @@
 
 Personal `bun create` template for [Effect](https://effect.website) 3.x projects on Bun + TypeScript.
 
-It is `template-bun-ts` plus the Effect stack: `effect` + `@effect/platform(-bun)`, `@effect/vitest`, the `@effect/language-service` TS plugin, and an idiomatic hello-world seed. Everything else (tsconfig combo, Biome via `@yoshintame/biome-config`, changesets, knip, husky + commitlint + lint-staged) comes from the base template.
+It is `template-bun-ts` plus the Effect stack: `effect` + `@effect/platform(-bun)`, `@effect/vitest`, the `@effect/language-service` TS plugin, and an idiomatic hello-world seed. Everything else (tsconfig combo, oxlint + oxfmt via `@yoshintame/ox-config`, git hooks and checks via `hk-config`, CI via `yoshintame/workflows`, knip) comes from the base template.
 
 ## Usage
 
 ```sh
 bun create yoshintame/template-bun-effect my-app
 cd my-app
+mise install
 bun install
+hk install --mise
 bun run dev
 ```
 
 ## Scripts
 
-| Script | What |
-|---|---|
-| `bun run dev` | Run `src/main.ts` in watch mode |
-| `bun run start` | Run `src/main.ts` once |
-| `bun run test` / `test:watch` | Vitest (via `@effect/vitest`) |
-| `bun run typecheck` | `tsc --noEmit` (strictest + bun combo) |
-| `bun run lint` / `lint:dry` | Biome lint |
-| `bun run format` | Biome format |
-| `bun run depscheck` | knip (unused deps / exports) |
-| `bun run changeset` / `version` / `release` | Changesets release flow |
+| Script                        | What                                                                                         |
+| ----------------------------- | -------------------------------------------------------------------------------------------- |
+| `bun run dev`                 | Run `src/main.ts` in watch mode                                                              |
+| `bun run start`               | Run `src/main.ts` once                                                                       |
+| `bun run test` / `test:watch` | Vitest (via `@effect/vitest`)                                                                |
+| `bun run typecheck`           | `tsc --noEmit` (strictest + bun combo), then `diagnostics`                                   |
+| `bun run diagnostics`         | Effect language service diagnostics, warnings included, e.g. an Effect that is never yielded |
+| `bun run depscheck`           | knip (unused deps / exports)                                                                 |
+
+## Development
+
+Tools come from `mise.toml`, checks from the `hk-config` preset in `hk.pkl`. Run `mise install` and `bun install`, then `hk install --mise` once per clone for the git hooks. `hk check --all --slow` runs every check CI runs, `hk fix --all` formats and applies lint fixes.
+
+CI is `.github/workflows/ci.yml` on top of [`yoshintame/workflows`](https://github.com/yoshintame/workflows). The project is an app (`"private": true`); to publish it as a package see [Publishing](#publishing).
 
 ## What the seed shows
 
@@ -39,7 +45,7 @@ Delete `Greeter` and write your own services. There is deliberately **no** `publ
 
 ## Conventions
 
-Follow the `effect-ts` and `ts-react-style` skills: `Effect.Service` over bare `Context.Tag`, tagged errors (`Data.TaggedError`), `Config.redacted` for secrets, `Match.tagsExhaustive` over `switch`, named exports, kebab-case files, no comments. Secrets and config come from the environment (Bun auto-loads `.env`) via `Config`, e.g. `GREETING` in the seed.
+Follow the `effect-ts` and `ts-react-style` skills: `Effect.Service` over bare `Context.Tag`, tagged errors (`Data.TaggedError`), `Config.redacted` for secrets, `Match.tagsExhaustive` over `switch`, named exports, kebab-case files, no comments. Secrets and config come from the environment (Bun auto-loads `.env`) via `Config`, e.g. `GREETING` in the seed. Internal imports go through the `#src/*` subpath imports in `package.json` (`#src/main` resolves to `./src/main.ts`), not a tsconfig `paths` alias.
 
 ## Recipes
 
@@ -60,7 +66,9 @@ const router = HttpRouter.empty.pipe(
 
 const app = router.pipe(HttpServer.serve(), HttpServer.withLogAddress)
 
-BunRuntime.runMain(Layer.launch(app.pipe(Layer.provide(BunHttpServer.layer({ port: 3000 })))))
+BunRuntime.runMain(
+  Layer.launch(app.pipe(Layer.provide(BunHttpServer.layer({ port: 3000 })))),
+)
 ```
 
 ### CLI
@@ -89,8 +97,13 @@ When consumers do not use Effect, expose a Promise API and keep Effect internal:
 ```ts
 import { Effect } from 'effect'
 
+import { Greeter, MainLive } from '#src/main'
+
 export function greet(name: string): Promise<string> {
-  return Greeter.greet(name).pipe(Effect.provide(MainLive), Effect.runPromise)
+  return Effect.flatMap(Greeter, (greeter) => greeter.greet(name)).pipe(
+    Effect.provide(MainLive),
+    Effect.runPromise,
+  )
 }
 ```
 
@@ -99,14 +112,32 @@ For long-lived processes reuse one runtime with `ManagedRuntime.make(MainLive)` 
 ### Asserting typed errors in tests
 
 ```ts
-const result = yield* Effect.either(service.doThing(badInput))
-expect(Either.isLeft(result)).toBe(true)
-if (Either.isLeft(result)) expect(result.left._tag).toBe('MyTaggedError')
+it.effect('fails with MyTaggedError on bad input', () =>
+  Effect.gen(function* () {
+    const result = yield* Effect.either(service.doThing(badInput))
+
+    expect(Either.isLeft(result)).toBe(true)
+    if (Either.isLeft(result)) expect(result.left._tag).toBe('MyTaggedError')
+  }),
+)
 ```
 
 ### Secrets
 
 ```ts
-const apiKey = yield* Config.redacted('API_KEY')
-const client = new Vendor({ apiKey: Redacted.value(apiKey) })
+const makeClient = Effect.gen(function* () {
+  const apiKey = yield* Config.redacted('API_KEY')
+
+  return new Vendor({ apiKey: Redacted.value(apiKey) })
+})
 ```
+
+## Publishing
+
+The template is an app. To publish it as a single package:
+
+1. In `package.json` drop `"private": true` and the `preinstall` script (npm runs it on the consumer's install, where `only-allow bun` fails it), set `"version": "0.0.0-development"` (semantic-release sets the real one) and add `exports`, `files`, `repository` and `publishConfig`. A package for Bun consumers can ship its sources as they are: `"exports": { ".": "./src/main.ts" }`, `"files": ["src"]`; the `#src/*` imports travel with it. Drop `src/types/reset.d.ts` and `@total-typescript/ts-reset` too: consumers type-check the shipped sources without ts-reset.
+2. Switch `hk.pkl` to the `ts-lib.pkl` preset and add the `lint:package` script it runs: `bun add -d publint @arethetypeswrong/cli`, then `"lint:package": "publint --strict && attw --pack . --profile esm-only"`. A package with a build step prepends `bun run build &&` and adds `"prepack": "bun run build"`: the release job publishes from a clean checkout.
+3. `bun add -d semantic-release` and add `"release": { "branches": ["main"] }` to `package.json`.
+4. On npmjs a trusted publisher can only be added to an existing package: publish the first version by hand with `version` temporarily set to it, tag that commit `vX.Y.Z`, push the tag, then add the publisher as described in [Registries and permissions](https://github.com/yoshintame/workflows#registries-and-permissions).
+5. Add the `release` job from the [`yoshintame/workflows` usage](https://github.com/yoshintame/workflows#usage) to `.github/workflows/ci.yml`, pinned to the same ref as `verify`, with the permissions your registry needs.
