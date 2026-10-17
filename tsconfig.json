@@ -8,9 +8,6 @@
     "noPropertyAccessFromIndexSignature": true,
     "resolveJsonModule": true,
     "noUncheckedSideEffectImports": true,
-    "plugins": [{ "name": "@effect/language-service" }],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "plugins": [{ "name": "@effect/language-service" }]
   }
 }

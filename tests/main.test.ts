@@ -2,7 +2,7 @@ import { it } from '@effect/vitest'
 import { ConfigProvider, Effect, Layer, Logger, LogLevel } from 'effect'
 import { expect } from 'vitest'
 
-import { Greeter } from '../src/main'
+import { Greeter } from '#src/main'
 
 const TestLive = Layer.mergeAll(
   Greeter.Default,
