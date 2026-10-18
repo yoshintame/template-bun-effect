@@ -25,18 +25,18 @@
     "effect": "^3.21.3"
   },
   "devDependencies": {
-    "@effect/language-service": "^0.86.2",
-    "@effect/vitest": "^0.29.0",
-    "@total-typescript/ts-reset": "^0.6.1",
-    "@tsconfig/bun": "^1.0.10",
-    "@tsconfig/strictest": "^2.0.8",
-    "@types/bun": "^1.4.3",
-    "@types/node": "^25.9.2",
-    "@yoshintame/ox-config": "^0.1.1",
-    "knip": "^6.16.0",
-    "oxfmt": "^0.73.0",
-    "oxlint": "^1.88.0",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.8"
+    "@effect/language-service": "0.86.2",
+    "@effect/vitest": "0.29.0",
+    "@total-typescript/ts-reset": "0.6.1",
+    "@tsconfig/bun": "1.0.10",
+    "@tsconfig/strictest": "2.0.8",
+    "@types/bun": "1.4.3",
+    "@types/node": "25.9.2",
+    "@yoshintame/ox-config": "0.1.1",
+    "knip": "6.16.0",
+    "oxfmt": "0.73.0",
+    "oxlint": "1.88.0",
+    "typescript": "6.0.3",
+    "vitest": "4.1.8"
   }
 }
