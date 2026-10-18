@@ -17,7 +17,7 @@
         "@tsconfig/strictest": "2.0.8",
         "@types/bun": "1.4.3",
         "@types/node": "25.9.2",
-        "@yoshintame/ox-config": "0.1.1",
+        "@yoshintame/ox-config": "0.2.0",
         "knip": "6.16.0",
         "oxfmt": "0.73.0",
         "oxlint": "1.88.0",
@@ -319,7 +319,7 @@
 
     "@vitest/utils": ["@vitest/utils@4.1.8", "", { "dependencies": { "@vitest/pretty-format": "4.1.8", "convert-source-map": "^2.0.0", "tinyrainbow": "^3.1.0" } }, "sha512-uOJamYALNhfJ6iolExyQM40yIQwDqYnkKtQ5VCiSe17E33H0aQ/u+1GlRuz4LZBk6Mm3sg90G9hEbmEt37C1Zg=="],
 
-    "@yoshintame/ox-config": ["@yoshintame/ox-config@0.1.1", "", { "peerDependencies": { "oxfmt": ">=0.72.0 <1", "oxlint": "^1.87.0" } }, "sha512-reSyhvOmuYmLsWEu1h16774WDkfwzH5iabrVoTsS6K2CEIddOQyDFS44XxHKWx2ewWXgSPf5bGoMfvTkKoMQug=="],
+    "@yoshintame/ox-config": ["@yoshintame/ox-config@0.2.0", "", { "peerDependencies": { "oxfmt": ">=0.72.0 <1", "oxlint": "^1.87.0", "oxlint-tsgolint": "^7.0.2004" }, "optionalPeers": ["oxlint-tsgolint"] }, "sha512-x9pb/ETHXurg4yRK13UiBJcX0E0s+6iGhNnKAHSq9K5BXmBLoxtSNUkzNm2UU/HyTixp8m5oFXIb8JsmcYIJoQ=="],
 
     "assertion-error": ["assertion-error@2.0.1", "", {}, "sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA=="],
 
