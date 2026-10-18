@@ -1,1 +1,8 @@
 amends "package://github.com/yoshintame/hk-config/releases/download/v0.4.0/hk-config@0.4.0#/presets/ts.pkl"
+
+steps {
+  ["depscheck"] {
+    check = "bun run depscheck"
+    profiles = List("slow")
+  }
+}
