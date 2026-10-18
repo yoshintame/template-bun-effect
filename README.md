@@ -2,7 +2,7 @@
 
 Personal `bun create` template for [Effect](https://effect.website) 3.x projects on Bun + TypeScript.
 
-It is `template-bun-ts` plus the Effect stack: `effect` + `@effect/platform(-bun)`, `@effect/vitest`, the `@effect/language-service` TS plugin, and an idiomatic hello-world seed. Everything else (tsconfig combo, type-aware oxlint on the `base` + `strict` presets and oxfmt via `@yoshintame/ox-config`, git hooks and checks via `hk-config`, CI via `yoshintame/workflows`, knip) comes from the base template.
+It is `template-bun-ts` plus the Effect stack: `effect` + `@effect/platform(-bun)`, `@effect/vitest`, the `@effect/language-service` TS plugin, and an idiomatic hello-world seed. Everything else (tsconfig combo, type-aware oxlint on the `base`, `strict` and `vitest` presets and oxfmt via `@yoshintame/ox-config`, git hooks and checks via `hk-config`, CI via `yoshintame/workflows`, knip) comes from the base template.
 
 ## Usage
 

@@ -32,7 +32,7 @@
     "@tsconfig/strictest": "2.0.8",
     "@types/bun": "1.4.3",
     "@types/node": "25.9.2",
-    "@yoshintame/ox-config": "0.2.0",
+    "@yoshintame/ox-config": "0.3.0",
     "knip": "6.16.0",
     "oxfmt": "0.73.0",
     "oxlint": "1.88.0",
